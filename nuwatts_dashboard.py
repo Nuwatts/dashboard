@@ -53,8 +53,9 @@ st.pyplot(fig)
 st.subheader("Live Inference Simulation")
 placeholder = st.empty()
 
-for i in range(len(X_test)):
-    input_data = X_test.iloc[i:i+1]
+# Instead of using test split, loop through all 61 rows in order
+for i in range(len(X)):
+    input_data = X.iloc[i:i+1]
     predicted_power = model.predict(input_data)[0]
     placeholder.metric(label=f"Minute {i+1}", value=f"Predicted TEG Power = {predicted_power:.4f} (normalized)")
-    time.sleep(0.1)  # simulate 1-minute delay with shorter interval
+    time.sleep(0.1)
