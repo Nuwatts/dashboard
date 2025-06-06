@@ -65,6 +65,9 @@ plot_data = {
     "Heat Exchanger Temp (°C)": []
 }
 
+chart_df = pd.DataFrame(plot_data).set_index("Minute")
+line_chart = chart_placeholder.line_chart(chart_df)
+
 for i in range(len(X)):
     input_data = X.iloc[i:i+1]
     predicted_power = model.predict(input_data)[0]
@@ -81,8 +84,8 @@ for i in range(len(X)):
     plot_data["Magnetic Field Strength (kA/m)"].append(real_data_point.get("Magnetic Field Strength (kA/m)", np.nan))
     plot_data["Heat Exchanger Temp (°C)"].append(real_data_point.get("Heat Exchanger Temp (°C)", np.nan))
 
-    # Display updated chart with selected features
+    # Convert to DataFrame and update chart
     chart_df = pd.DataFrame(plot_data).set_index("Minute")
-    chart_placeholder.line_chart(chart_df)
+    line_chart.add_rows(chart_df.iloc[[-1]])
 
     time.sleep(0.1)
