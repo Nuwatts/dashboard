@@ -55,7 +55,13 @@ metric_placeholder = st.empty()
 chart_placeholder = st.empty()
 
 predicted_values = []
-plot_data = pd.DataFrame(columns=["Minute", "Predicted TEG Power (normalized)", "Ferrofluid Temp (°C)", "Magnetic Field Strength (kA/m)", "Heat Exchanger Temp (°C)"])
+plot_data = {
+    "Minute": [],
+    "Predicted TEG Power (normalized)": [],
+    "Ferrofluid Temp (°C)": [],
+    "Magnetic Field Strength (kA/m)": [],
+    "Heat Exchanger Temp (°C)": []
+}
 
 for i in range(len(X)):
     input_data = X.iloc[i:i+1]
@@ -67,15 +73,14 @@ for i in range(len(X)):
 
     # Append corresponding real-world features for charting
     real_data_point = df.iloc[i]
-    plot_data = plot_data.append({
-        "Minute": i + 1,
-        "Predicted TEG Power (normalized)": predicted_power,
-        "Ferrofluid Temp (°C)": real_data_point["Ferrofluid Temp (°C)"],
-        "Magnetic Field Strength (kA/m)": real_data_point["Magnetic Field Strength (kA/m)"],
-        "Heat Exchanger Temp (°C)": real_data_point["Heat Exchanger Temp (°C)"]
-    }, ignore_index=True)
+    plot_data["Minute"].append(i + 1)
+    plot_data["Predicted TEG Power (normalized)"].append(predicted_power)
+    plot_data["Ferrofluid Temp (°C)"].append(real_data_point["Ferrofluid Temp (°C)"])
+    plot_data["Magnetic Field Strength (kA/m)"].append(real_data_point["Magnetic Field Strength (kA/m)"])
+    plot_data["Heat Exchanger Temp (°C)"].append(real_data_point["Heat Exchanger Temp (°C)"])
 
     # Display updated chart with selected features
-    chart_placeholder.line_chart(plot_data.set_index("Minute"))
+    chart_df = pd.DataFrame(plot_data).set_index("Minute")
+    chart_placeholder.line_chart(chart_df)
 
     time.sleep(0.1)
