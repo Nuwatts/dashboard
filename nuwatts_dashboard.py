@@ -49,13 +49,26 @@ ax.set_xlabel("Feature Importance")
 ax.set_title("What Factors Most Affect TEG Power Output")
 st.pyplot(fig)
 
-# Step 8: Real-Time Inference Simulation
+# Step 8: Real-Time Inference Simulation with Live Chart
 st.subheader("Live Inference Simulation")
-placeholder = st.empty()
+metric_placeholder = st.empty()
+chart_placeholder = st.empty()
 
-# Instead of using test split, loop through all 61 rows in order
+predicted_values = []
+
 for i in range(len(X)):
     input_data = X.iloc[i:i+1]
     predicted_power = model.predict(input_data)[0]
-    placeholder.metric(label=f"Minute {i+1}", value=f"Predicted TEG Power = {predicted_power:.4f} (normalized)")
+    predicted_values.append(predicted_power)
+
+    # Update metric
+    metric_placeholder.metric(label=f"Minute {i+1}", value=f"{predicted_power:.4f} (normalized)")
+
+    # Update chart
+    chart_data = pd.DataFrame({
+        "Minute": list(range(1, i + 2)),
+        "Predicted TEG Power (normalized)": predicted_values
+    })
+    chart_placeholder.line_chart(chart_data.set_index("Minute"))
+
     time.sleep(0.1)
