@@ -59,10 +59,15 @@ chart_placeholder = st.empty()
 predicted_values = []
 plot_data = {
     "Minute": [],
-    "Predicted TEG Power (normalized)": [],
-    "Ferrofluid Temp (°C)": [],
+    "Inlet Temp (°C)": [],
+    "Outlet Temp (°C)": [],
+    "Flow Rate (L/min)": [],
     "Magnetic Field Strength (kA/m)": [],
-    "Heat Exchanger Temp (°C)": []
+    "Ambient Temp (°C)": [],
+    "Coolant Pressure (bar)": [],
+    "Voltage (V)": [],
+    "Current (A)": [],
+    "TEG Power (W)": []
 }
 
 chart_df = pd.DataFrame(plot_data).set_index("Minute")
@@ -76,13 +81,18 @@ for i in range(len(X)):
     # Update metric
     metric_placeholder.metric(label=f"Minute {i+1}", value=f"{predicted_power:.4f} (normalized)")
 
-    # Append corresponding real-world features for charting
+    # Append real-time data for chart
     real_data_point = df.iloc[i]
     plot_data["Minute"].append(i + 1)
-    plot_data["Predicted TEG Power (normalized)"].append(predicted_power)
-    plot_data["Ferrofluid Temp (°C)"].append(real_data_point.get("Ferrofluid Temp (°C)", np.nan))
+    plot_data["Inlet Temp (°C)"].append(real_data_point.get("Inlet Temp (°C)", np.nan))
+    plot_data["Outlet Temp (°C)"].append(real_data_point.get("Outlet Temp (°C)", np.nan))
+    plot_data["Flow Rate (L/min)"].append(real_data_point.get("Flow Rate (L/min)", np.nan))
     plot_data["Magnetic Field Strength (kA/m)"].append(real_data_point.get("Magnetic Field Strength (kA/m)", np.nan))
-    plot_data["Heat Exchanger Temp (°C)"].append(real_data_point.get("Heat Exchanger Temp (°C)", np.nan))
+    plot_data["Ambient Temp (°C)"].append(real_data_point.get("Ambient Temp (°C)", np.nan))
+    plot_data["Coolant Pressure (bar)"].append(real_data_point.get("Coolant Pressure (bar)", np.nan))
+    plot_data["Voltage (V)"].append(real_data_point.get("Voltage (V)", np.nan))
+    plot_data["Current (A)"].append(real_data_point.get("Current (A)", np.nan))
+    plot_data["TEG Power (W)"].append(real_data_point.get("TEG Power (W)", np.nan))
 
     # Convert to DataFrame and update chart
     chart_df = pd.DataFrame(plot_data).set_index("Minute")
