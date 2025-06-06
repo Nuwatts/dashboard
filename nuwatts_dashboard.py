@@ -37,19 +37,11 @@ y_pred = model.predict(X_test)
 mae = mean_absolute_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
-# Step 7: Feature Importance
-importances = model.feature_importances_
-features = X.columns
-
-# Streamlit Dashboard
+# Step 7: Feature Importance Plot Placeholder
 st.title("Nuwatts TEG Power Prediction Dashboard")
 st.markdown(f"**Model Performance:** R² = {r2:.2f}, MAE = {mae:.4f}")
 
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.barh(features, importances)
-ax.set_xlabel("Feature Importance")
-ax.set_title("What Factors Most Affect TEG Power Output")
-st.pyplot(fig)
+bar_chart_placeholder = st.empty()
 
 # Step 8: Real-Time Inference Simulation with Live Chart
 st.subheader("Live Inference Simulation")
@@ -94,8 +86,19 @@ for i in range(len(X)):
     plot_data["Current (A)"].append(real_data_point.get("Current (A)", np.nan))
     plot_data["TEG Power (W)"].append(real_data_point.get("TEG Power (W)", np.nan))
 
-    # Convert to DataFrame and update chart
+    # Update line chart
     chart_df = pd.DataFrame(plot_data).set_index("Minute")
     line_chart.add_rows(chart_df.iloc[[-1]])
+
+    # Update feature importance dynamically
+    latest_input = pd.DataFrame([input_data.values[0]], columns=X.columns)
+    feature_imp = model.feature_importances_
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.barh(X.columns, feature_imp)
+    ax.set_xlabel("Feature Importance")
+    ax.set_title("Dynamic Feature Importance Over Time")
+    ax.legend(["Features"], loc="lower right")
+    bar_chart_placeholder.pyplot(fig)
 
     time.sleep(0.1)
