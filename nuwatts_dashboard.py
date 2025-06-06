@@ -13,12 +13,12 @@ import time
 
 # Step 2: Load and Preprocess Data
 df = pd.read_csv("Nuwatts_AI_Training_Data_61_Minutes.csv")
-df = df.drop(columns=["Time"])
+time_column = pd.read_csv("Nuwatts_AI_Training_Data_61_Minutes.csv")[["Time"]]  # Keep original time for charting
 
 # Step 3: Normalize the Data
 scaler = MinMaxScaler()
-scaled_data = scaler.fit_transform(df)
-scaled_df = pd.DataFrame(scaled_data, columns=df.columns)
+scaled_data = scaler.fit_transform(df.drop(columns=["Time"]))
+scaled_df = pd.DataFrame(scaled_data, columns=df.columns.drop("Time"))
 
 # Step 4: Split Features and Target
 X = scaled_df.drop(columns=["TEG Power (W)"])
@@ -55,6 +55,7 @@ metric_placeholder = st.empty()
 chart_placeholder = st.empty()
 
 predicted_values = []
+plot_data = pd.DataFrame(columns=["Minute", "Predicted TEG Power (normalized)", "Ferrofluid Temp (°C)", "Magnetic Field Strength (kA/m)", "Heat Exchanger Temp (°C)"])
 
 for i in range(len(X)):
     input_data = X.iloc[i:i+1]
@@ -64,11 +65,17 @@ for i in range(len(X)):
     # Update metric
     metric_placeholder.metric(label=f"Minute {i+1}", value=f"{predicted_power:.4f} (normalized)")
 
-    # Update chart
-    chart_data = pd.DataFrame({
-        "Minute": list(range(1, i + 2)),
-        "Predicted TEG Power (normalized)": predicted_values
-    })
-    chart_placeholder.line_chart(chart_data.set_index("Minute"))
+    # Append corresponding real-world features for charting
+    real_data_point = df.iloc[i]
+    plot_data = plot_data.append({
+        "Minute": i + 1,
+        "Predicted TEG Power (normalized)": predicted_power,
+        "Ferrofluid Temp (°C)": real_data_point["Ferrofluid Temp (°C)"],
+        "Magnetic Field Strength (kA/m)": real_data_point["Magnetic Field Strength (kA/m)"],
+        "Heat Exchanger Temp (°C)": real_data_point["Heat Exchanger Temp (°C)"]
+    }, ignore_index=True)
+
+    # Display updated chart with selected features
+    chart_placeholder.line_chart(plot_data.set_index("Minute"))
 
     time.sleep(0.1)
