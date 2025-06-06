@@ -63,7 +63,7 @@ plot_data = {
 }
 
 chart_df = pd.DataFrame(plot_data).set_index("Minute")
-line_chart = chart_placeholder.line_chart(chart_df)
+line_chart = chart_placeholder.line_chart(chart_df, use_container_width=True)
 
 for i in range(len(X)):
     input_data = X.iloc[i:i+1]
@@ -98,7 +98,6 @@ for i in range(len(X)):
     ax.barh(X.columns, feature_imp)
     ax.set_xlabel("Feature Importance")
     ax.set_title("Dynamic Feature Importance Over Time")
-    ax.legend(["Features"], loc="lower right")
     bar_chart_placeholder.pyplot(fig)
 
     time.sleep(0.1)
